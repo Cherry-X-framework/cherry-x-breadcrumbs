@@ -93,16 +93,16 @@ function twentyseventeen_breadcrumbs() {
 * `post_taxonomy` - supported taxonomies array (allows to build parent/child trail for taxonomy)
 
 ## Strings array structure:
-`browse`
-`home`
-`error_404`
-`archives`
-`search`
-`paged`
-`archive_minute`
-`archive_week`
-`archive_minute_hour`
-`archive_hour`
-`archive_day`
-`archive_month`
-`archive_year`
+* `browse`
+* `home`
+* `error_404`
+* `archives`
+* `search`
+* `paged`
+* `archive_minute`
+* `archive_week`
+* `archive_minute_hour`
+* `archive_hour`
+* `archive_day`
+* `archive_month`
+* `archive_year`
