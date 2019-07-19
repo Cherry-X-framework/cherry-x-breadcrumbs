@@ -712,7 +712,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 			/* Display terms for specific post type taxonomy if requested. */
 			$this->add_post_terms( $post_id );
 
-			$post_title = have_posts() ? single_post_title( '', false ) : get_the_title() ;
+			$post_title = single_post_title( '', false );
 
 			/* End with the post title. */
 			if ( $post_title ) {
