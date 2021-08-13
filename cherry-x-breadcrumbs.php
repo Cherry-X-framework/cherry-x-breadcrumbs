@@ -2,7 +2,7 @@
 /**
  * Module to build and show breadcrumbs
  *
- * Version: 1.0.3
+ * Version: 1.0.4
  *
  * @author     Cherry Team <support@cherryframework.com>, Justin Tadlock <justin@justintadlock.com>
  * @copyright  Copyright (c) 2008 - 2014, Justin Tadlock
@@ -456,7 +456,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 		 * @param string $url    Item URL.
 		 * @param string $class  Item CSS class.
 		 */
-		public function _add_item( $format = 'link_format', $label, $url = '', $class = '', $prepend = false ) {
+		public function _add_item( $format = 'link_format', $label = '', $url = '', $class = '', $prepend = false ) {
 
 			$title = esc_attr( wp_strip_all_tags( $label ) );
 			$css   = ( 'target_format' == $format ) ? 'target' : 'link';
