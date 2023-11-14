@@ -2,7 +2,7 @@
 /**
  * Module to build and show breadcrumbs
  *
- * Version: 1.0.4
+ * Version: 1.0.6
  *
  * @author     Cherry Team <support@cherryframework.com>, Justin Tadlock <justin@justintadlock.com>
  * @copyright  Copyright (c) 2008 - 2014, Justin Tadlock
@@ -80,34 +80,35 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 		public function __construct( $args = array() ) {
 
 			$defaults = array(
-				'separator'         => '&#47;',
-				'before'            => '',
-				'after'             => '',
-				'show_mobile'       => true,
-				'show_tablet'       => true,
-				'wrapper_format'    => '<div>%1$s</div><div>%2$s</div>',
-				'page_title_format' => '<h1 class="page-title">%s</h1>',
-				'item_format'       => '<div class="%2$s">%1$s</div>',
-				'home_format'       => '<a href="%4$s" class="%2$s is-home" rel="home" title="%3$s">%1$s</a>',
-				'link_format'       => '<a href="%4$s" class="%2$s" rel="tag" title="%3$s">%1$s</a>',
-				'target_format'     => '<span class="%2$s">%1$s</span>',
-				'show_on_front'     => true,
-				'network'           => false,
-				'show_title'        => true,
-				'show_items'        => true,
-				'show_browse'       => true,
-				'echo'              => true,
-				'strings'           => array(),
-				'date_labels'       => array(),
+				'separator'          => '&#47;',
+				'before'             => '',
+				'after'              => '',
+				'show_mobile'        => true,
+				'show_tablet'        => true,
+				'wrapper_format'     => '<div>%1$s</div><div>%2$s</div>',
+				'page_title_format'  => '<h1 class="page-title">%s</h1>',
+				'item_format'        => '<div class="%2$s">%1$s</div>',
+				'home_format'        => '<a href="%4$s" class="%2$s is-home" rel="home" title="%3$s">%1$s</a>',
+				'link_format'        => '<a href="%4$s" class="%2$s" rel="tag" title="%3$s">%1$s</a>',
+				'target_format'      => '<span class="%2$s">%1$s</span>',
+				'show_on_front'      => true,
+				'network'            => false,
+				'show_title'         => true,
+				'show_items'         => true,
+				'show_browse'        => true,
+				'echo'               => true,
+				'cpt_item_with_links' => true,
+				'strings'            => array(),
+				'date_labels'        => array(),
 				// Cherry team editing start
-				'action'            => 'cx_breadcrumbs/render',
-				'css_namespace'     => array(),
-				'path_type'         => 'full',
+				'action'             => 'cx_breadcrumbs/render',
+				'css_namespace'      => array(),
+				'path_type'          => 'full',
 				// Cherry team editing end
-				'post_taxonomy'     => apply_filters(
+				'post_taxonomy'      => apply_filters(
 					'cx_breadcrumbs/trail_taxonomies',
 					array(
-						'post'      => 'category',
+						'post'       => 'category',
 					)
 				),
 			);
@@ -702,7 +703,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 			$post_id = get_queried_object_id();
 
 			/* If the post has a parent, follow the parent trail. */
-			if ( 0 < $post->post_parent ) {
+			if ( 0 < $post->post_parent && get_option( 'page_on_front') != $post->post_parent ) {
 				$this->add_post_parents( $post->post_parent );
 			} else {
 				/* If the post doesn't have a parent, get its hierarchy based off the post type. */
@@ -726,7 +727,20 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 
 				}
 
-				$label = $post_title;
+				$post_type = get_post_type( $post_id );
+				$label     = $post_title;
+
+				if ( 'post' !== $post_type && true !== $this->args['cpt_item_with_links'] ) {
+
+					$post_type_object = get_post_type_object( $post_type );
+					$post_type_label  = ! empty( $post_type_object->labels->archive_title )
+							? $post_type_object->labels->archive_title
+							: $post_type_object->labels->name;
+
+					$label = $post_type_label . ': ' . $label;
+
+				}
+
 				$this->_add_item( 'target_format', $label );
 
 			}
@@ -751,7 +765,9 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 			/* Add the terms of the taxonomy for this post. */
 			if ( ! empty( $this->args['post_taxonomy'][ $post_type ] ) ) {
 
-				$post_terms = wp_get_post_terms( $post_id, $this->args['post_taxonomy'][ $post_type ] );
+				$args = apply_filters( 'cx_breadcrumbs/post-terms-args', array(), $post_id, $this->args );
+
+				$post_terms = wp_get_post_terms( $post_id, $this->args['post_taxonomy'][ $post_type ], $args );
 
 				if ( is_array( $post_terms ) && isset( $post_terms[0] ) && is_object( $post_terms[0] ) ) {
 					$term_id = $post_terms[0]->term_id;
@@ -1321,7 +1337,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 			}
 
 			/* If there's an archive page, add it to the trail. */
-			if ( ! empty( $post_type_object->has_archive ) ) {
+			if ( ! empty( $post_type_object->has_archive ) && true === $this->args['cpt_item_with_links'] ) {
 
 				$url = get_post_type_archive_link( $post_type );
 				/* Add support for a non-standard label of 'archive_title' (special use case). */
