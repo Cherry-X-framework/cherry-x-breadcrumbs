@@ -2,7 +2,7 @@
 /**
  * Module to build and show breadcrumbs
  *
- * Version: 1.0.6
+ * Version: 1.0.7
  *
  * @author     Cherry Team <support@cherryframework.com>, Justin Tadlock <justin@justintadlock.com>
  * @copyright  Copyright (c) 2008 - 2014, Justin Tadlock
@@ -98,6 +98,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 				'show_browse'        => true,
 				'echo'               => true,
 				'cpt_item_with_links' => true,
+				'cpt_item_title_with_post_type' => true,
 				'strings'            => array(),
 				'date_labels'        => array(),
 				// Cherry team editing start
@@ -550,6 +551,9 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 			/* Get parent post by the path. */
 			$post = get_page_by_path( $path );
 
+			/* Multi-language plugins */
+			$post = apply_filters( 'cx_breadcrumbs/post', $post );
+
 			if ( ! empty( $post ) ) {
 				$this->add_post_parents( $post->ID );
 			} elseif ( is_null( $post ) ) {
@@ -730,7 +734,7 @@ if ( ! class_exists( 'CX_Breadcrumbs' ) ) {
 				$post_type = get_post_type( $post_id );
 				$label     = $post_title;
 
-				if ( 'post' !== $post_type && true !== $this->args['cpt_item_with_links'] ) {
+				if ( 'post' !== $post_type && true !== $this->args['cpt_item_with_links'] && true === $this->args['cpt_item_title_with_post_type']) {
 
 					$post_type_object = get_post_type_object( $post_type );
 					$post_type_label  = ! empty( $post_type_object->labels->archive_title )
